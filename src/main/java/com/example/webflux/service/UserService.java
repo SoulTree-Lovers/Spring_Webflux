@@ -1,8 +1,7 @@
 package com.example.webflux.service;
 
 import com.example.webflux.model.User;
-import com.example.webflux.repository.UserRepository;
-import com.example.webflux.repository.UserRepositoryImpl;
+import com.example.webflux.repository.UserR2dbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -12,12 +11,13 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+//    private final UserRepository userRepository;
+    private final UserR2dbcRepository userR2dbcRepository;
 
     // CRUD
 
     public Mono<User> create(String name, String email) {
-        return userRepository.save(
+        return userR2dbcRepository.save(
             User.builder()
                 .name(name)
                 .email(email)
@@ -26,23 +26,27 @@ public class UserService {
     }
 
     public Flux<User> findAll() {
-        return userRepository.findAll();
+        return userR2dbcRepository.findAll();
     }
 
     public Mono<User> findById(Long id) {
-        return userRepository.findById(id);
+        return userR2dbcRepository.findById(id);
     }
 
-    public Mono<Integer> deleteById(Long id) {
-        return userRepository.deleteById(id);
+//    public Mono<Integer> deleteById(Long id) {
+//        return userR2dbcRepository.deleteById(id);
+//    }
+
+    public Mono<Void> deleteById(Long id) {
+        return userR2dbcRepository.deleteById(id);
     }
 
     public Mono<User> update(Long id, String name, String email) {
-        return userRepository.findById(id)
+        return userR2dbcRepository.findById(id)
             .flatMap(user -> {
                 user.setName(name);
                 user.setEmail(email);
-                return userRepository.save(user);
+                return userR2dbcRepository.save(user);
             });
     }
 }
