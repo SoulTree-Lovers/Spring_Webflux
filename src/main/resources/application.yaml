@@ -4,6 +4,6 @@ logging:
 
 spring:
   r2dbc:
-    url: r2dbc:mysql://localhost:3306/sns
+    url: r2dbc:mysql://localhost:3310/sns
     username: root
     password: root
