@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @WebFluxTest(UserController.class)
@@ -118,7 +118,8 @@ class UserControllerTest {
     void deleteUser() {
 
         when(userService.deleteById(1L)).thenReturn(
-            Mono.just(1)
+//            Mono.just(1)
+            Mono.empty()
         );
 
         webTestClient.delete().uri("/users/delete/1")
