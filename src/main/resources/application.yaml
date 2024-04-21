@@ -7,3 +7,7 @@ spring:
     url: r2dbc:mysql://localhost:3310/sns
     username: root
     password: root
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
