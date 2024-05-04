@@ -3,6 +3,7 @@ package com.example.webflux.controller;
 import com.example.webflux.controller.dto.UserRequest;
 import com.example.webflux.controller.dto.UserResponse;
 import com.example.webflux.model.User;
+import com.example.webflux.service.PostServiceV2;
 import com.example.webflux.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,12 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,11 +27,38 @@ import static org.mockito.Mockito.when;
 @AutoConfigureWebTestClient
 class UserControllerTest {
 
+    static {
+        BlockHound.install(
+            builder -> builder.allowBlockingCallsInside("클래스 이름", "메소드 이름"), // 특정 클래스의 메소드에서 발생하는 블라킹은 허용
+        );
+    }
+
     @Autowired
     private WebTestClient webTestClient;
 
     @MockBean
     private UserService userService; // 가짜 user service를 활용
+
+    @MockBean
+    private PostServiceV2 postServiceV2;
+
+    /**
+     * 테스트 코드 내에서 블라킹 발생 시 예외 발생
+     * (코드 상 반드시 필요한 블라킹이 필요한 부분도 잡게 됨.)
+     * (이 부분은 따로 제거할 수 있음.)
+     */
+    @Test
+    void blockHoundTest() {
+        StepVerifier.create(Mono.delay(Duration.ofSeconds(1))
+                .doOnNext(it -> {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }))
+            .verifyComplete();
+    }
 
     @Test
     void createUser() {
