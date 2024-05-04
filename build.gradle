@@ -21,6 +21,15 @@ repositories {
 	mavenCentral()
 }
 
+// 자바 버전이 13 이상이면 아래 인자 추가
+tasks.withType(Test).all {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
+		jvmArgs += [
+		        "-XX:+AllowRedefinitionToAddDeleteMethods"
+		]
+	}
+}
+
 dependencies {
 	runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.80.Final:osx-aarch_64'
 
@@ -30,11 +39,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	implementation 'io.asyncer:r2dbc-mysql:1.0.2' // spi 1.0.0 (spring boot 3과 호환)
-	implementation 'io.projectreactor.tools:blockhound:1.0.8.RELEASE'
+//	implementation 'io.projectreactor.tools:blockhound:1.0.8.RELEASE'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testimplementation 'io.projectreactor.tools:blockhound:1.0.8.RELEASE'
+
+	testImplementation 'io.projectreactor.tools:blockhound:1.0.8.RELEASE'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.10.0'
